@@ -1,48 +1,51 @@
 <?php
 
+// Definimos la clase Task para representar cada tarea de la base de datos
 class Task
 {
     private $id;
     private $title;
     private $description;
-    private $is_completed;
-    private $user_id;
+    private $isCompleted;
+    private $userId;
 
-    private $taskLine = [];
-
-    public function __construct($id, $title, $description, $is_completed, $user_id, $taskLine)
+    // Constructor con los campos exactos de la tabla tasks
+    public function __construct($id, $title, $description, $isCompleted, $userId)
     {
         $this->id = $id;
         $this->title = $title;
         $this->description = $description;
-        $this->is_completed = $is_completed;
-        $this->user_id = $user_id;
-        $this->taskLine = TaskLineRepository::getTaskLinesByOrderId($id);
+        $this->isCompleted = $isCompleted;
+        $this->userId = $userId;
     }
 
+    // Devuelve el id de la tarea
     public function getId()
     {
         return $this->id;
     }
 
+    // Devuelve el titulo
     public function getTitle()
     {
         return $this->title;
     }
 
+    // Devuelve la descripcion
     public function getDescription()
     {
         return $this->description;
     }
 
-    public function getIs_completed()
+    // Devuelve si esta completada (true o false / 1 o 0)
+    public function isCompleted()
     {
-        return $this->is_completed;
+        return (bool)$this->isCompleted;
     }
 
-    public function getUser_id()
+    // Devuelve el id del usuario dueno de la tarea
+    public function getUserId()
     {
-        return $this->user_id;
+        return $this->userId;
     }
-
 }

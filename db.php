@@ -4,6 +4,13 @@ class DB
 {
     public static function connect()
     {
-        return new mysqli(getenv('DB_HOST'), getenv('DB_USER'), getenv('DB_PASS'), getenv('DB_NAME'));
+        $conexion = new mysqli('127.0.0.1', 'root', '1234', 'task_manager', 3307);
+
+        if ($conexion->connect_error) {
+            die("Error de conexión: " . $conexion->connect_error);
+        }
+
+        $conexion->set_charset("utf8mb4");
+        return $conexion;
     }
 }
