@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gestor de Tareas</title>
+</head>
+
+<body>
+    <?php
+
+    if (isset($_SESSION['user'])) {
+        echo "hola " . $_SESSION['user']->getUsername() . "<a href='index.php?c=task&new'>Crear tarea</a> <a href='index.php?c=user&logout'>salir</a>";
+    } else {
+        ?>
+        <a href="index.php?c=user&login">Entrar</a>
+        <a href="index.php?c=user&register">Registrate</a>
+
+        <?php
+    }
+
+
+    foreach ($products as $product) {
+        echo $product->getName() . "<br>";
+    }
+    ?>
+</body>
+
+</html>
