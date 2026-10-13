@@ -1,28 +1,57 @@
 <!DOCTYPE html>
-<html lang="en">
-
+<html lang="es">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Gestor de Tareas</title>
 </head>
-
 <body>
-    <?php
 
-    if (isset($_SESSION['user'])) {
-        echo "hola " . $_SESSION['user']->getUsername() . "<a href='index.php?c=task&new'>Crear tarea</a> <a href='index.php?c=user&logout'>salir</a>";
-    } else {
-        ?>
-        <a href="index.php?c=user&login">Entrar</a>
-        <a href="index.php?c=user&register">Registrate</a>
+    <?php if (isset($_SESSION['user'])): ?>
+        <p>
+            Hola, <strong><?php echo htmlspecialchars($_SESSION['user']->getUsername()); ?></strong> |
+            <a href="index.php?c=task&new">Crear tarea</a> |
+            <a href="index.php?logout">Cerrar sesión</a>
+        </p>
 
-        <?php
-    }
+        <hr>
 
+        <h2>Mis Tareas</h2>
 
+        <?php if (!empty($tasks)): ?>
+            <ul>
+                <?php foreach ($tasks as $task): ?>
+                    <li>
+                        <strong><?php echo htmlspecialchars($task->getTitle()); ?></strong>
+                        <?php if ($task->getDescription()): ?>
+                            — <?php echo htmlspecialchars($task->getDescription()); ?>
+                        <?php endif; ?>
 
-    ?>
+                        <!-- Estado de la tarea -->
+                        <strong>
+                            [<?php echo $task->isCompleted() ? 'Completada' : 'Pendiente'; ?>]
+                        </strong>
+
+                        <!-- Botón para alternar estado -->
+                        <a href="index.php?c=task&toggle=<?php echo $task->getId(); ?>&status=<?php echo $task->isCompleted() ? 1 : 0; ?>">
+                            (<?php echo $task->isCompleted() ? 'Marcar como pendiente' : 'Marcar como completada'; ?>)
+                        </a>
+
+                        <!-- Botón para eliminar -->
+                        <a href="index.php?c=task&delete=<?php echo $task->getId(); ?>" onclick="return confirm('¿Seguro que deseas borrarla?');">
+                            [Eliminar]
+                        </a>
+                    </li>
+                <?php endforeach; ?>
+            </ul>
+        <?php else: ?>
+            <p>No tienes tareas creadas todavía.</p>
+        <?php endif; ?>
+
+    <?php else: ?>
+        <p>Bienvenido al gestor de tareas. Por favor, identifícate:</p>
+        <a href="index.php?c=user&login">Entrar</a> |
+        <a href="index.php?c=user&register">Regístrate</a>
+    <?php endif; ?>
+
 </body>
-
 </html>

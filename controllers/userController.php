@@ -1,41 +1,53 @@
 <?php
 
-if(isset($_POST['register'])){
-    if(isset($_POST['username']) && isset($_POST['password']) && isset($_POST['password2']) && $_POST['password']==$_POST['password2']){
-        $q="insert into users values (NULL, '".$_POST['username']."', md5('".$_POST['password']."'))";
+require_once __DIR__ . '/../models/User.php';
+require_once __DIR__ . '/../models/UserRepository.php';
 
-        $db= DB::connect();
-        $db->query($q);
-        if($db->insert_id){
-            header('location:index.php?c=user&login');
-            exit();
-        }
-        header('location:index.php?c=user&register');
-        exit();
-    }
+// Cerrar sesión
+if (isset($_GET['logout'])) {
+    session_destroy();
+    header("Location: index.php");
+    exit;
 }
 
-if(isset($_POST['login'])){
-    if(isset($_POST['username']) && isset($_POST['password'])){
-        $q="select * from users where username='".$_POST['username']."'";
+// INICIO DE SESIÓN
+if (isset($_GET['login'])) {
+    if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+        $username = trim($_POST['username'] ?? '');
+        $password = trim($_POST['password'] ?? '');
 
-        $db=DB::connect();
-        $result = $db->query($q);
-        if($row=$result->fetch_assoc()){
-            if($row['password']==md5($_POST['password'])){
-                $_SESSION['user']=new User($row['id'], $row['username']);
-                header('location:index.php');
+        $user = UserRepository::login($username, $password);
+        if ($user) {
+            $_SESSION['user'] = $user;
+            header("Location: index.php");
+            exit;
+        } else {
+            $error = "Usuario o contraseña incorrectos.";
+        }
+    }
+    require_once __DIR__ . '/../views/login.phtml';
+    exit;
+}
+
+// REGISTRO
+if (isset($_GET['register'])) {
+    if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+        $username = trim($_POST['username'] ?? '');
+        $password = trim($_POST['password'] ?? '');
+
+        if (!empty($username) && !empty($password)) {
+            $user = UserRepository::register($username, $password);
+            if ($user) {
+                $_SESSION['user'] = $user;
+                header("Location: index.php");
                 exit;
+            } else {
+                $error = "El usuario ya existe o hubo un error al registrarlo.";
             }
+        } else {
+            $error = "Por favor, completa todos los campos.";
         }
-        header('location:index.php?c=user&login');
-        exit;
     }
-}
-
-if(isset($_GET['login'])){
-    require_once('views/login.phtml');
-}
-if(isset($_GET['register'])){
-    require_once('views/resgister.phtml');
+    require_once __DIR__ . '/../views/register.phtml';
+    exit;
 }

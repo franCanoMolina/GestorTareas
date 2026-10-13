@@ -1,15 +1,16 @@
 <?php
-ini_set('display_errors', 1);
-require_once("models/User.php");    // ← antes del session_start
+require_once __DIR__ . '/models/User.php';
 session_start();
 
-$env = parse_ini_file(".env");
-foreach ($env as $key => $value) {
-    putenv("$key=$value");
+if (isset($_GET['c'])) {
+    $controllerName = $_GET['c'] . 'Controller.php';
+    $file = __DIR__ . '/controllers/' . $controllerName;
+    
+    if (file_exists($file)) {
+        require_once $file;
+        exit; // Detener la ejecución para no cargar el controlador por defecto
+    }
 }
 
-require_once("db.php");
-//require_once("models/Task.php");
-require_once("controllers/mainControllers.php");
-
-?>
+// Si no hay parámetro ?c= o el archivo no existe, carga el principal
+require_once __DIR__ . '/controllers/mainControllers.php';
