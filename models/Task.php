@@ -8,15 +8,17 @@ class Task
     private $description;
     private $isCompleted;
     private $userId;
+    private $categoryName;
 
     // Constructor con los campos exactos de la tabla tasks
-    public function __construct($id, $title, $description, $isCompleted, $userId)
+    public function __construct($id, $title, $description, $isCompleted, $userId, $categoryName = null)
     {
         $this->id = $id;
         $this->title = $title;
         $this->description = $description;
         $this->isCompleted = $isCompleted;
         $this->userId = $userId;
+        $this->categoryName = $categoryName;
     }
 
     // Devuelve el id de la tarea
@@ -47,5 +49,11 @@ class Task
     public function getUserId()
     {
         return $this->userId;
+    }
+
+    // Devuelve el nombre de la categoria asignada (o null si no tiene)
+    public function getCategoryName()
+    {
+        return $this->categoryName;
     }
 }
