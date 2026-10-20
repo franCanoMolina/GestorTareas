@@ -66,5 +66,64 @@
         <a href="index.php?c=user&register">Regístrate</a>
     <?php endif; ?>
 
+    <?php if (isset($_SESSION['user'])): ?>
+    <hr>
+
+    <!-- 1. FORMULARIO PARA CREAR NUEVA CATEGORÍA -->
+    <h2>Gestión de Categorías</h2>
+    <h3>Crear Nueva Categoría</h3>
+    <form action="index.php?c=task&newCategory" method="POST">
+        <input type="text" name="category_name" placeholder="Nombre de la categoría" required>
+        <button type="submit">Crear</button>
+    </form>
+
+    <br>
+
+    <!-- LISTADO DE CATEGORÍAS EXISTENTES -->
+    <?php if (!empty($categories)): ?>
+        <h3>Categorías Existentes:</h3>
+        <ul>
+            <?php foreach ($categories as $cat): ?>
+                <li>
+                    <?php echo htmlspecialchars($cat['name']); ?>
+                    | <a href="index.php?c=task&deleteCategory=<?php echo $cat['id']; ?>" onclick="return confirm('¿Seguro que deseas eliminar esta categoría?');" style="color: red;">[Eliminar]</a>
+                </li>
+            <?php endforeach; ?>
+        </ul>
+
+        <hr>
+
+        <!-- 2. FORMULARIO PARA ASIGNAR CATEGORÍA A TAREA -->
+        <?php if (!empty($tasks)): ?>
+            <h2>Categorizar Tareas</h2>
+            <form action="index.php?c=task&categorize" method="POST">
+                <label for="task_id">Selecciona una tarea:</label>
+                <select name="task_id" id="task_id" required>
+                    <?php foreach ($tasks as $task): ?>
+                        <option value="<?php echo $task->getId(); ?>">
+                            <?php echo htmlspecialchars($task->getTitle()); ?>
+                        </option>
+                    <?php endforeach; ?>
+                </select>
+
+                <label for="category_id">Selecciona una categoría:</label>
+                <select name="category_id" id="category_id" required>
+                    <?php foreach ($categories as $cat): ?>
+                        <option value="<?php echo $cat['id']; ?>">
+                            <?php echo htmlspecialchars($cat['name']); ?>
+                        </option>
+                    <?php endforeach; ?>
+                </select>
+
+                <button type="submit">Categorizar</button>
+            </form>
+        <?php endif; ?>
+
+    <?php else: ?>
+        <p><em>No tienes categorías creadas todavía. Crea una arriba para poder asignarla.</em></p>
+    <?php endif; ?>
+
+<?php endif; ?>
+
 </body>
 </html>

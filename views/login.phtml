@@ -1,22 +1,30 @@
 <!DOCTYPE html>
-<html lang="en">
-
+<html lang="es">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=
-    , initial-scale=1.0">
-    <title>Document</title>
+    <title>Iniciar Sesión</title>
 </head>
-
 <body>
+    <h2>Iniciar Sesión</h2>
 
-    <a href="index.php">volver</a><br>
-    haz login:
-    <form action="index.php?c=user" method="POST">
-        <input type="text" name="username" placeholder="nombre de usuario">
-        <input type="password" name="password">
-        <input type="submit" name="login">
+    <?php if (!empty($error)): ?>
+        <p style="color: red;"><?php echo htmlspecialchars($error); ?></p>
+    <?php endif; ?>
+
+    <!-- OJO a la acción: debe tener method="POST" y action="index.php?c=user&login" -->
+    <form action="index.php?c=user&login" method="POST">
+        <p>
+            <label for="username">Usuario:</label><br>
+            <input type="text" id="username" name="username" required>
+        </p>
+
+        <p>
+            <label for="password">Contraseña:</label><br>
+            <input type="password" id="password" name="password" required>
+        </p>
+
+        <button type="submit">Entrar</button>
+        <a href="index.php">Volver</a>
     </form>
 </body>
-
 </html>

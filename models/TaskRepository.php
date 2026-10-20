@@ -67,4 +67,62 @@ class TaskRepository
         $sql = "INSERT IGNORE INTO task_shares (task_id, user_id) VALUES ('$taskId', '$targetUserId')";
         return $db->query($sql);
     }
+
+    // Poner categoria a una tarea
+    public static function categorizeTask($taskId, $categoryId){
+        $db = DB::connect();
+        $sql = "UPDATE tasks SET category_id = '$categoryId' WHERE id = '$taskId'";
+        return $db->query($sql);
+    }
+
+    // Crear una nueva categoria
+    public static function createCategory($name)
+    {
+        $db = DB::connect();
+        $name = $db->real_escape_string($name);
+        $sql = "INSERT INTO categories (name) VALUES ('$name')";
+        return $db->query($sql);
+    }
+
+    // Obtener todas las categorias
+    public static function getAllCategories()
+    {
+        $db = DB::connect();
+        $categories = [];
+        $sql = "SELECT id, name FROM categories ORDER BY name ASC";
+        $resultado = $db->query($sql);
+
+        if ($resultado) {
+            while ($fila = $resultado->fetch_assoc()) {
+                $categories[] = [
+                    'id' => (int)$fila['id'],
+                    'name' => $fila['name']
+                ];
+            }
+        }
+        return $categories;
+    }
+
+    // Guardar categoria
+    public static function saveCategory($categoryId, $name)
+    {
+        $db = DB::connect();
+        $name = $db->real_escape_string($name);
+        $sql = "UPDATE categories SET name = '$name' WHERE id = '$categoryId'";
+        return $db->query($sql);
+    }
+
+    // ELIMINAR CATEGORÍA
+    public static function deleteCategory($categoryId)
+    {
+        $db = DB::connect();
+        $categoryId = (int)$categoryId;
+
+        // 1. Quitar la categoría de las tareas que la tengan asignada
+        $db->query("UPDATE tasks SET category_id = NULL WHERE category_id = $categoryId");
+
+        // 2. Eliminar la categoría de la tabla categories
+        $sql = "DELETE FROM categories WHERE id = $categoryId";
+        return $db->query($sql);
+    }
 }
