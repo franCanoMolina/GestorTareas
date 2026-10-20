@@ -12,11 +12,14 @@ if (isset($_GET['logout'])) {
 
 // INICIO DE SESIÓN
 if (isset($_GET['login'])) {
+    $error = "";
+
     if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $username = trim($_POST['username'] ?? '');
         $password = trim($_POST['password'] ?? '');
 
         $user = UserRepository::login($username, $password);
+
         if ($user) {
             $_SESSION['user'] = $user;
             header("Location: index.php");
@@ -25,7 +28,9 @@ if (isset($_GET['login'])) {
             $error = "Usuario o contraseña incorrectos.";
         }
     }
-    require_once __DIR__ . '/../views/login.phtml';
+
+    // SIEMPRE debe cargar la vista de login, incluso si falló el POST
+    require_once __DIR__ . '/../views/login.phtml'; // o loginView.phtml si lo llamaste así
     exit;
 }
 

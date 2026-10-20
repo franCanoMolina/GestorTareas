@@ -1,21 +1,23 @@
 <?php
 
 require_once __DIR__ . '/../models/User.php';
+require_once __DIR__ . '/../models/UserRepository.php';
 require_once __DIR__ . '/../models/Task.php';
 require_once __DIR__ . '/../models/TaskRepository.php';
 
-// Cerrar sesión
 if (isset($_GET['logout'])) {
     session_destroy();
     header("Location: index.php");
     exit;
 }
 
-// Obtener tareas si el usuario ha iniciado sesión
 $tasks = [];
+$otherUsers = [];
+
 if (isset($_SESSION['user'])) {
-    $tasks = TaskRepository::getTasksByUser($_SESSION['user']->getId());
+    $currentId = $_SESSION['user']->getId();
+    $tasks = TaskRepository::getTasksByUser($currentId);
+    $otherUsers = UserRepository::getAllExcept($currentId);
 }
 
-// Cargar la vista principal
 require_once __DIR__ . '/../views/mainView.phtml';

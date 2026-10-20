@@ -1,50 +1,59 @@
 <?php
 
 require_once __DIR__ . '/User.php';
+require_once __DIR__ . '/../db.php';
 
 class UserRepository
 {
-    // Registra un nuevo usuario en la base de datos
     public static function register($username, $password)
     {
-        $db = new mysqli('127.0.0.1', 'root', '1234', 'task_manager', 3307);
-
-        if ($db->connect_error) {
-            die("Error de conexion: " . $db->connect_error);
+        $db = DB::connect();
+        $username = $db->real_escape_string($username);
+        
+        // Comprobar si ya existe
+        $check = $db->query("SELECT id FROM users WHERE username = '$username'");
+        if ($check && $check->num_rows > 0) {
+            return false;
         }
 
-        // Ciframos la contraseña antes de guardarla
-        $hashedPassword = password_hash($password, PASSWORD_DEFAULT);
-
-        $sql = "INSERT INTO users (username, password) VALUES ('$username', '$hashedPassword')";
-
+        $hash = password_hash($password, PASSWORD_BCRYPT);
+        $sql = "INSERT INTO users (username, password) VALUES ('$username', '$hash')";
+        
         if ($db->query($sql)) {
-            // Devolvemos el nuevo usuario creado como objeto User
             return new User($db->insert_id, $username);
         }
-
         return false;
     }
 
-    // Comprueba el usuario y la contraseña para iniciar sesion
-    public static function login($username, $password)
-    {
-        $db = new mysqli('127.0.0.1', 'root', '1234', 'task_manager', 3307);
+    public static function login($username, $password){
+        $db = DB::connect();
+        $username = $db->real_escape_string($username);
 
-        if ($db->connect_error) {
-            die("Error de conexion: " . $db->connect_error);
-        }
+        $sql = "SELECT id, username, password FROM users WHERE username = '$username' LIMIT 1";
+        $res = $db->query($sql);
 
-        $sql = "SELECT * FROM users WHERE username = '$username'";
-        $resultado = $db->query($sql);
-
-        if ($resultado && $fila = $resultado->fetch_assoc()) {
-            // Verificamos si la contraseña coincide con el hash guardado
-            if (password_verify($password, $fila['password'])) {
+        if ($res && $fila = $res->fetch_assoc()) {
+            // Valida con hash O con texto plano (para las cuentas viejas)
+            if (password_verify($password, $fila['password']) || $password === $fila['password']) {
                 return new User($fila['id'], $fila['username']);
             }
         }
-
         return false;
+    }
+
+    // Obtener todos los demás usuarios para poder compartir tareas
+    public static function getAllExcept($currentUserId)
+    {
+        $db = DB::connect();
+        $users = [];
+        $sql = "SELECT id, username FROM users WHERE id != '$currentUserId' ORDER BY username ASC";
+        $resultado = $db->query($sql);
+
+        if ($resultado) {
+            while ($fila = $resultado->fetch_assoc()) {
+                $users[] = new User($fila['id'], $fila['username']);
+            }
+        }
+        return $users;
     }
 }

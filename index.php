@@ -1,16 +1,24 @@
 <?php
-require_once __DIR__ . '/models/User.php';
-session_start();
+ini_set('display_errors', 1);
+ini_set('display_startup_errors', 1);
+error_reporting(E_ALL);
 
+// Cargar la clase User antes de iniciar la sesión
+require_once __DIR__ . '/models/User.php';
+
+// Iniciar sesión una sola vez
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
+
+// Enrutador de controladores
 if (isset($_GET['c'])) {
-    $controllerName = $_GET['c'] . 'Controller.php';
-    $file = __DIR__ . '/controllers/' . $controllerName;
-    
-    if (file_exists($file)) {
-        require_once $file;
-        exit; // Detener la ejecución para no cargar el controlador por defecto
+    $controller = __DIR__ . '/controllers/' . $_GET['c'] . 'Controller.php';
+    if (file_exists($controller)) {
+        require_once $controller;
+        exit;
     }
 }
 
-// Si no hay parámetro ?c= o el archivo no existe, carga el principal
+// Controlador por defecto (revisa si tu archivo termina en s o no: mainControllers.php o mainController.php)
 require_once __DIR__ . '/controllers/mainControllers.php';

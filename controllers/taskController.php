@@ -23,8 +23,19 @@ if (isset($_GET['new'])) {
             exit;
         }
     }
-
     require_once __DIR__ . '/../views/createTaskView.phtml';
+    exit;
+}
+
+// COMPARTIR TAREA
+if (isset($_GET['share']) && $_SERVER['REQUEST_METHOD'] === 'POST') {
+    $taskId = (int)$_POST['task_id'];
+    $targetUserId = (int)$_POST['user_id'];
+
+    if ($taskId > 0 && $targetUserId > 0) {
+        TaskRepository::shareTask($taskId, $targetUserId);
+    }
+    header("Location: index.php");
     exit;
 }
 
@@ -32,7 +43,6 @@ if (isset($_GET['new'])) {
 if (isset($_GET['toggle'])) {
     $taskId = (int)$_GET['toggle'];
     $currentStatus = (int)($_GET['status'] ?? 0);
-
     TaskRepository::toggleTask($taskId, $currentStatus);
     header("Location: index.php");
     exit;
@@ -41,7 +51,7 @@ if (isset($_GET['toggle'])) {
 // ELIMINAR TAREA
 if (isset($_GET['delete'])) {
     $taskId = (int)$_GET['delete'];
-    TaskRepository::deleteTask($taskId);
+    TaskRepository::deleteTask($taskId, $userId);
     header("Location: index.php");
     exit;
 }
