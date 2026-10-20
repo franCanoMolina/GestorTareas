@@ -74,6 +74,14 @@ if (isset($_GET['deleteCategory'])) {
     exit;
 }
 
+// MOSTRAR TAREAS POR CATEGORÍA
+if (isset($_GET['category'])) {
+    $categoryId = (int)$_GET['category'];
+    $tasks = TaskRepository::getTasksByCategory($categoryId, $userId);
+    header("Location: index.php");
+    exit;
+}
+
 
 // COMPLETAR / DESMARCAR TAREA
 if (isset($_GET['toggle'])) {

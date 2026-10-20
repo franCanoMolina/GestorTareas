@@ -125,4 +125,34 @@ class TaskRepository
         $sql = "DELETE FROM categories WHERE id = $categoryId";
         return $db->query($sql);
     }
+
+    // Obtener tareas por categoría
+    public static function getTasksByCategory($categoryId, $userId){
+        $db = DB::connect();
+        $tasks = [];
+        $categoryId = (int)$categoryId;
+        $userId = (int)$userId;
+
+        $sql = "
+            SELECT DISTINCT t.* 
+            FROM tasks t
+            LEFT JOIN task_shares ts ON t.id = ts.task_id
+            WHERE (t.user_id = '$userId' OR ts.user_id = '$userId') AND t.category_id = '$categoryId'
+            ORDER BY t.id DESC
+        ";
+
+        $resultado = $db->query($sql);
+        if ($resultado) {
+            while ($fila = $resultado->fetch_assoc()) {
+                $tasks[] = new Task(
+                    $fila['id'],
+                    $fila['title'],
+                    $fila['description'],
+                    $fila['is_completed'],
+                    $fila['user_id']
+                );
+            }
+        }
+        return $tasks;
+    }
 }

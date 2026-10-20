@@ -125,5 +125,19 @@
 
 <?php endif; ?>
 
+<?php if (!empty($categories)): ?>
+    <hr>
+    <h2>Filtrar Tareas por Categoría</h2>
+    <ul>
+        <?php foreach ($categories as $cat): ?>
+            <li>
+                <a href="index.php?c=task&category=<?php echo $cat['id']; ?>">
+                    <?php echo htmlspecialchars($cat['name']); ?>
+                </a>
+            </li>
+        <?php endforeach; ?>
+    </ul>
+<?php endif; ?>
+
 </body>
 </html>
