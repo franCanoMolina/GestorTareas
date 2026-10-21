@@ -12,9 +12,10 @@ class TaskRepository
         $tasks = [];
         
         $sql = "
-            SELECT DISTINCT t.* 
+            SELECT DISTINCT t.*, c.name AS category_name
             FROM tasks t
             LEFT JOIN task_shares ts ON t.id = ts.task_id
+            LEFT JOIN categories c ON t.category_id = c.id
             WHERE t.user_id = '$userId' OR ts.user_id = '$userId'
             ORDER BY t.id DESC
         ";
@@ -27,7 +28,8 @@ class TaskRepository
                     $fila['title'],
                     $fila['description'],
                     $fila['is_completed'],
-                    $fila['user_id']
+                    $fila['user_id'],
+                    $fila['category_name'] ?? null
                 );
             }
         }

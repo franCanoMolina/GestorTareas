@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Tus Proyectos</title>
+</head>
+<body>
+    <header>
+        <p>
+            Hola, <strong><?php echo htmlspecialchars($_SESSION['user']->getUsername()); ?></strong> | 
+            <a href="index.php">Ir a Mis Tareas Personales</a> | 
+            <a href="index.php?c=user&logout">Cerrar sesión</a>
+        </p>
+    </header>
+
+    <hr>
+
+    <h1>Proyectos</h1>
+
+    <!-- FORMULARIO DE NUEVO PROYECTO -->
+    <h3>Crear un Nuevo Proyecto</h3>
+    <form action="index.php?c=project&create" method="POST">
+        <input type="text" name="project_name" placeholder="Nombre del proyecto" required>
+        <button type="submit">Crear Proyecto</button>
+    </form>
+
+    <br>
+
+    <!-- LISTADO DE PROYECTOS DEL USUARIO -->
+    <h3>Tus Proyectos Disponibles</h3>
+    <?php if (!empty($projects)): ?>
+        <ul>
+            <?php foreach ($projects as $proj): ?>
+                <li>
+                    <strong><?php echo htmlspecialchars($proj->getName()); ?></strong>
+                    — <a href="index.php?c=project&view=<?php echo $proj->getId(); ?>">Entrar al proyecto</a>
+                </li>
+            <?php endforeach; ?>
+        </ul>
+    <?php else: ?>
+        <p>No tienes ningún proyecto todavía. Crea uno arriba para empezar a colaborar.</p>
+    <?php endif; ?>
+</body>
+</html>

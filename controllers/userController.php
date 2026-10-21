@@ -30,6 +30,7 @@ if (isset($_GET['register'])) {
     exit;
 }
 
+// LOGIN
 if (isset($_GET['login'])) {
     $error = "";
 
@@ -37,40 +38,16 @@ if (isset($_GET['login'])) {
         $username = trim($_POST['username'] ?? '');
         $password = trim($_POST['password'] ?? '');
 
-        // 1. Conexión directa para inspeccionar la base de datos
-        $db = DB::connect();
-        $uEscaped = $db->real_escape_string($username);
-        $res = $db->query("SELECT * FROM users WHERE username = '$uEscaped' LIMIT 1");
+        $user = UserRepository::login($username, $password);
 
-        echo "<pre style='background:#f4f4f4; padding:15px; border:1px solid #ccc;'>";
-        echo "<h3>Depuración del Login:</h3>";
-        echo "Usuario introducido: " . htmlspecialchars($username) . "\n";
-        echo "Contraseña introducida: " . htmlspecialchars($password) . "\n";
-
-        if ($res && $fila = $res->fetch_assoc()) {
-            echo "Usuario encontrado en BD (ID: {$fila['id']})\n";
-            echo "Password en BD: {$fila['password']}\n";
-
-            $esBcrypt = password_verify($password, $fila['password']);
-            $esPlano  = ($password === $fila['password']);
-
-            echo "¿Coincide password_verify()?: " . ($esBcrypt ? 'SÍ' : 'NO') . "\n";
-            echo "¿Coincide texto plano?: " . ($esPlano ? 'SÍ' : 'NO') . "\n";
-
-            if ($esBcrypt || $esPlano) {
-                $_SESSION['user'] = new User($fila['id'], $fila['username']);
-                echo "\n¡Autenticación correcta! Redirigiendo a index.php...";
-                echo "<br><a href='index.php'>Haz clic aquí si no redirige automáticamente</a>";
-                header("Location: index.php");
-                exit;
-            } else {
-                echo "\nERROR: La contraseña no coincide con la guardada en la base de datos.\n";
-            }
+        if ($user) {
+            $_SESSION['user'] = $user;
+            // Redirige directamente a la pantalla de proyectos antes del gestor personal
+            header("Location: index.php?c=project");
+            exit;
         } else {
-            echo "\nERROR: No se encontró ningún usuario con el nombre '$username' en la tabla users.\n";
+            $error = "Usuario o contraseña incorrectos.";
         }
-        echo "</pre>";
-        exit;
     }
 
     require_once __DIR__ . '/../views/login.phtml';

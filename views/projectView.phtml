@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title><?php echo htmlspecialchars($project->getName()); ?></title>
+</head>
+<body>
+    <p><a href="index.php?c=project">← Volver a la lista de proyectos</a></p>
+
+    <h1>Proyecto: <?php echo htmlspecialchars($project->getName()); ?></h1>
+
+    <!-- COMPARTIR CON OTROS USUARIOS -->
+    <fieldset style="display:inline-block; margin-bottom: 20px;">
+        <legend>Invitar usuario al proyecto</legend>
+        <form action="index.php?c=project&share" method="POST">
+            <input type="hidden" name="project_id" value="<?php echo $project->getId(); ?>">
+            <select name="user_id" required>
+                <option value="">Selecciona usuario...</option>
+                <?php foreach ($otherUsers as $u): ?>
+                    <option value="<?php echo $u->getId(); ?>">
+                        <?php echo htmlspecialchars($u->getUsername()); ?>
+                    </option>
+                <?php endforeach; ?>
+            </select>
+            <button type="submit">Compartir</button>
+        </form>
+    </fieldset>
+
+    <!-- AÑADIR TAREAS AL PROYECTO (SIN CATEGORÍAS) -->
+    <h3>Añadir Tarea a este Proyecto</h3>
+    <form action="index.php?c=project&addTask" method="POST">
+        <input type="hidden" name="project_id" value="<?php echo $project->getId(); ?>">
+        <p><input type="text" name="title" placeholder="Título de la tarea" required></p>
+        <p><textarea name="description" placeholder="Descripción de la tarea"></textarea></p>
+        <button type="submit">Guardar Tarea</button>
+    </form>
+
+    <hr>
+
+    <h3>Tareas del Proyecto</h3>
+    <?php if (!empty($projectTasks)): ?>
+        <ul>
+            <?php foreach ($projectTasks as $t): ?>
+                <li>
+                    <strong><?php echo htmlspecialchars($t->getTitle()); ?></strong>
+                    <?php if ($t->getDescription()): ?>
+                        — <?php echo htmlspecialchars($t->getDescription()); ?>
+                    <?php endif; ?>
+                    [<?php echo $t->isCompleted() ? 'Completada' : 'Pendiente'; ?>]
+                </li>
+            <?php endforeach; ?>
+        </ul>
+    <?php else: ?>
+        <p>No hay tareas creadas dentro de este proyecto todavía.</p>
+    <?php endif; ?>
+</body>
+</html>

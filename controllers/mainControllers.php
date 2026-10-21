@@ -4,6 +4,9 @@ require_once __DIR__ . '/../models/User.php';
 require_once __DIR__ . '/../models/UserRepository.php';
 require_once __DIR__ . '/../models/Task.php';
 require_once __DIR__ . '/../models/TaskRepository.php';
+require_once __DIR__ . '/../models/ProjectRepository.php';
+
+
 
 
 if (isset($_GET['logout'])) {
