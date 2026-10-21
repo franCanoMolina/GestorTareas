@@ -152,18 +152,30 @@
 
     <?php endif; ?>
 
-<?php if (!empty($categories)): ?>
     <hr>
-    <h2>Filtrar Tareas por Categoría</h2>
+
+<h2>Mis Proyectos</h2>
+
+<!-- Formulario para crear un nuevo proyecto -->
+<form action="index.php?c=project&create" method="POST">
+    <input type="text" name="project_name" placeholder="Nombre del nuevo proyecto" required>
+    <button type="submit">Crear Proyecto</button>
+</form>
+
+<br>
+
+<!-- Listado de proyectos accesibles -->
+<?php if (!empty($projects)): ?>
     <ul>
-        <?php foreach ($categories as $cat): ?>
+        <?php foreach ($projects as $proj): ?>
             <li>
-                <a href="index.php?c=task&category=<?php echo $cat['id']; ?>">
-                    <?php echo htmlspecialchars($cat['name']); ?>
-                </a>
+                <strong><?php echo htmlspecialchars($proj->getName()); ?></strong>
+                — <a href="index.php?c=project&view=<?php echo $proj->getId(); ?>">Abrir proyecto</a>
             </li>
         <?php endforeach; ?>
     </ul>
+<?php else: ?>
+    <p>No perteneces a ningún proyecto todavía.</p>
 <?php endif; ?>
 
 </body>
