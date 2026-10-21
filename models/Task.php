@@ -19,6 +19,7 @@ class Task
         $this->isCompleted = $isCompleted;
         $this->userId = $userId;
         $this->categoryName = $categoryName;
+        $this->categoryName = $categoryName;
     }
 
     // Devuelve el id de la tarea
